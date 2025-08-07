@@ -1,4 +1,4 @@
-<h1>{{ name() }}</h1>
+<h1> Hero: {{ name() }}</h1>
 
 <dl>
   <td>Nombre:</td>
@@ -19,6 +19,6 @@
   Cambiar nombre
 </button>
 
-<button class="btn btn-primary">Cambiar edad</button>
+<button class="btn btn-primary" (click)="chageAge()">Cambiar edad</button>
 
 <button (click)="resetForm()" class="btn btn-primary mx-2">Reset</button>
