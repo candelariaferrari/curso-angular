@@ -1,10 +1,12 @@
-import { ChangeDetectionStrategy, Component, signal } from "@angular/core";
+import { UpperCasePipe } from "@angular/common";
+import { ChangeDetectionStrategy, Component, computed, signal } from "@angular/core";
 
 
 @Component({
   templateUrl: './hero-page.component.html',
   styleUrl: './hero-page.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush, //estamos diciendo que quiero usar zoneJS
+  imports: [UpperCasePipe],
+  //changeDetection: ChangeDetectionStrategy.OnPush, //estamos diciendo que quiero usar zoneJS
 })
 export class HeroPageComponent {
 
@@ -12,13 +14,21 @@ export class HeroPageComponent {
    name = signal<string>('Ironman');
    age = signal<number>(45);
 
+ // señal computada
+   heroDescription = computed(()=>{
+    const description = `${ this.name()} - ${this.age()}`;
+    return description
+   })
+
+   capitalizeName = computed(()=> this.name().toUpperCase())
+
 
   //4 - Crear un método llamado: getHeroDescription Debe de regresar la concatenación del nombre y la edad.
-  getHeroDescription() {
+/*   getHeroDescription() {
     return `${this.name().toUpperCase()} - ${this.age()} años`;
     //Para leer el valor de una señal, se la invoca como una función: name() y age()
     // .toUpperCase() convierte ese string a mayúsculas
-  };
+  }; */
 
 
   //5 -Implementar el método changeHero, no recibe argumentos y lo cambia a:
