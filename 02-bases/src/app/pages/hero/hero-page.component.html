@@ -11,8 +11,8 @@
   <dd>{{ getHeroDescription() }}</dd>
 
   <td>Capitalizado:</td>
-  <!--  Intentar  -->
-  <!-- <dd> {{ 'Mostrar nombre TODO EN MAYÚSCULAS' }} </dd> -->
+  <!--  otra forma de mostrar en mayus -->
+   <dd> {{ name().toUpperCase() }} </dd>
 </dl>
 
 <button (click)="changeHero()" class="btn btn-primary mx-2">
