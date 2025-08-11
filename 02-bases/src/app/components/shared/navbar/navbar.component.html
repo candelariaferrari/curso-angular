@@ -1,0 +1,17 @@
+<nav>
+  <a routerLink="/"
+  routerLinkActive="active"
+  [routerLinkActiveOptions]="{exact: true}">Counter</a>
+  <!-- "active" es el nombre de una clase inventada -->
+  <!--   <a routerLink="/hero" routerLinkActive="active">Hero</a>
+   [routerLinkActiveOptions]="{exact: true}" sirve para que la ruta aparezca activa el path tiene que s
+   ser exactamente como lo defino -->
+
+  <a [routerLink]="['/hero']" [routerLinkActive]="'active'">hero - seccion</a>
+  <!-- Asi se puede usar cuando queremos que el link sea un caracter computado, como un arreglo o alguna seccion-->
+  <!-- otros -->
+  <a routerLink="/dragonball"
+  routerLinkActive="active"
+  [routerLinkActiveOptions]="{exact: true}">Dragonball</a>
+
+</nav>
