@@ -1,0 +1,18 @@
+<h3>Listado de personajes fuertes</h3>
+<ul>
+  @for (character of characters(); track character.id; let idx = $index){
+    @if(character.power > 500){ <!-- forma de trabajar las condiciones -->
+      <li>
+        <span>{{idx + 1}} {{character.name}} </span> <!-- empieza en 0 porque los arreglos empiezan en 0 por eso el + 1 para que empiece en 1-->
+        <strong
+        [class.text-primary]="character.power < 9000"
+        [class.text-danger]="character.power > 9000">( {{character.power}} )</strong>
+        </li>
+    }@else {
+      <li><strong>No vale la pena</strong></li>
+    }
+
+  }
+      <!--  <li>Goku</li>  Elemento a repetir -->
+
+</ul>
