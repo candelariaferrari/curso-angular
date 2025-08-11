@@ -26,9 +26,13 @@ export class DragonballSuperPageComponent {
     { id: 2, name: 'Vegeta', power: 8000 },
   ]);
 
+addCharacter(character: Characters){
+  this.characters.update( // para usar las señales y si necesitamos depender del valor anterior
+    list => [...list, character]
+  )
+}
 
-
-  addCharacter() {
+/*   addCharacter() {
     // si no tenemos un nombre, o si no tenemos un power o si el power en menor o igual a 0
     if(!this.name() || !this.power() || this.power() <= 0) {
       return;
@@ -50,7 +54,7 @@ export class DragonballSuperPageComponent {
     //this.characters().push(newCharacter);
 
 
-  }
+  } */
   //Para volver los inputs en cero
   resetFields(){
     this.name.set('');

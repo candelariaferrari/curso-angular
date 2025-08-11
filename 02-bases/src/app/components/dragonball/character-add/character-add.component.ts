@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, output, signal } from '@angular/core';
 
 interface Characters {
   id: number;
@@ -16,6 +16,10 @@ export class CharacterAddComponent {
  name = signal('');
  power = signal(0);
 
+//OUTPUT
+newCharacter = output<Characters>();
+//definimos que nuestro componente emite algo, un personaje
+
  addCharacter() {
   // si no tenemos un nombre, o si no tenemos un power o si el power en menor o igual a 0
   if(!this.name() || !this.power() || this.power() <= 0) {
@@ -25,12 +29,13 @@ export class CharacterAddComponent {
   //si si tiene las otras cosas entonces crea un character nuevo
   const newCharacter:Characters ={
     //id: this.characters().length + 1,
+    id: Math.floor(Math.random()*1000), //id randomm
     name: this.name(),
     power: this.power(),
-    id: 0
+
   };
   //insertarlo en la lista de personajes,
-  console.log(newCharacter);
+  this.newCharacter.emit(newCharacter)
 
   //this.characters.update((list)=>[...list, newCharacter])
   this.resetFields()
