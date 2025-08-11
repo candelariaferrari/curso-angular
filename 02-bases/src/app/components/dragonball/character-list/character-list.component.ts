@@ -11,5 +11,5 @@ export class CharacterListComponent {
 
    //mandar info del componente padre "dragonball-super" al hijo, o sea este
   characters= input.required<Characters[]>()
-
+  listName= input.required<string>()
  }

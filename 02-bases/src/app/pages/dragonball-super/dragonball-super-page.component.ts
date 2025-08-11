@@ -1,5 +1,6 @@
 import { Component, signal, computed } from '@angular/core';
 import { CharacterListComponent } from "../../components/dragonball/character-list/character-list.component";
+import { CharacterAddComponent } from "../../components/dragonball/character-add/character-add.component";
 
 interface Characters {
   id: number;
@@ -8,7 +9,7 @@ interface Characters {
 }
 @Component({
   selector: 'app-dragonball-page',
-  imports: [CharacterListComponent],
+  imports: [CharacterListComponent, CharacterAddComponent],
   templateUrl: './dragonball-super-page.component.html',
   styleUrl: './dragonball-super-page.component.scss'
 })
