@@ -8,10 +8,10 @@ interface Characters {
 @Component({
   selector: 'app-dragonball-page',
   imports: [],
-  templateUrl: './dragonball-page.component.html',
-  styleUrl: './dragonball-page.component.scss'
+  templateUrl: './dragonball-super-page.component.html',
+  styleUrl: './dragonball-super-page.component.scss'
 })
-export class DragonballPageComponent {
+export class DragonballSuperPageComponent {
   //Formulario
   name = signal('');
   power = signal(0);
@@ -21,14 +21,10 @@ export class DragonballPageComponent {
   //arreglos
   characters = signal<Characters[]>([
     { id: 1, name: 'Goku', power: 9001 },
-
+    { id: 2, name: 'Vegeta', power: 8000 },
   ]);
 
-  powerClasses = computed(() => {
-    return {
-      'text-danger': true,
-    }
-  })
+
 
   addCharacter() {
     // si no tenemos un nombre, o si no tenemos un power o si el power en menor o igual a 0

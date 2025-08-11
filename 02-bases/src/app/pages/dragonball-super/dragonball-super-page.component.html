@@ -1,0 +1,47 @@
+<h1> Dragonball Super Page</h1>
+<hr>
+<section class="row">
+  <div class="col-12 col-sm-6">
+    <h3>Agregar: {{name()}}</h3>
+    <input
+      type="text"
+      class="form-control"
+      placeholder="Nombre"
+      [value]="name()"
+      (change)="name.set(txtName.value)"
+      (input)="name.set(txtName.value)"
+      #txtName> <!-- asignar valor a un atributo -->
+    <!-- (change) evento , referencia local con #nombredereferencia que apunta al input -->
+
+    <input
+      type="number"
+      class="form-control mt-2"
+      placeholder="Poder"
+      [value]="power()"
+      (input)="power.set(+txtPower.value)"
+      #txtPower
+      > <!-- .value siempre va a ser un string por eso tenemos que poner el + -->
+    <button (click)="addCharacter()" class="mt-2 btn btn-primary" >Agregar</button>
+  </div>
+
+  <div class="col-12 col-sm-6">
+    <h3>Listado de personajes fuertes</h3>
+    <ul>
+      @for (character of characters(); track character.id; let idx = $index){
+        @if(character.power > 500){ <!-- forma de trabajar las condiciones -->
+          <li>
+            <span>{{idx + 1}} {{character.name}} </span> <!-- empieza en 0 porque los arreglos empiezan en 0 por eso el + 1 para que empiece en 1-->
+            <strong
+            [class.text-primary]="character.power < 9000"
+            [class.text-danger]="character.power > 9000">( {{character.power}} )</strong>
+            </li>
+        }@else {
+          <li><strong>No vale la pena</strong></li>
+        }
+
+      }
+          <!--  <li>Goku</li>  Elemento a repetir -->
+
+    </ul>
+  </div>
+</section>
