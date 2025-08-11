@@ -4,14 +4,14 @@
   <div class="col-12 col-sm-6">
     <!-- dragonball-character-add -->
     <dragonball-character-add
-    (newCharacter)="addCharacter($event)"/> <!-- funciona como un click , y con el event recibimos el personaje -->
+    (newCharacter)="dragonballService.addCharacter($event)"/> <!-- funciona como un click , y con el event recibimos el personaje -->
   </div>
 
   <div class="col-12 col-sm-6">
     <!-- el componente padre le manda el input al hijo  -->
     <dragonball-character-list
      listName="Listado de personajes"
-    [characters]="characters()"/>
+    [characters]="dragonballService.characters()"/>
  <!--    <h3>Listado de personajes fuertes</h3>
     <ul>
       @for (character of characters(); track character.id; let idx = $index){

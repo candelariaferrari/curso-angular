@@ -1,6 +1,7 @@
-import { Component, signal, computed } from '@angular/core';
+import { Component, signal, computed, inject } from '@angular/core';
 import { CharacterListComponent } from "../../components/dragonball/character-list/character-list.component";
 import { CharacterAddComponent } from "../../components/dragonball/character-add/character-add.component";
+import { DragonballService } from '../../services/dragonball.service';
 
 interface Characters {
   id: number;
@@ -14,50 +15,13 @@ interface Characters {
   styleUrl: './dragonball-super-page.component.scss'
 })
 export class DragonballSuperPageComponent {
-  //Formulario
-  name = signal('');
-  power = signal(0);
+/*  Forma tradicional
+constructor(
+  public dragonballService: DragonballService
+ ){} */
+
+//injectamos el servicio
+  public dragonballService= inject(DragonballService)
 
 
-
-  //arreglos
-  characters = signal<Characters[]>([
-    { id: 1, name: 'Goku', power: 9001 },
-    { id: 2, name: 'Vegeta', power: 8000 },
-  ]);
-
-addCharacter(character: Characters){
-  this.characters.update( // para usar las señales y si necesitamos depender del valor anterior
-    list => [...list, character]
-  )
-}
-
-/*   addCharacter() {
-    // si no tenemos un nombre, o si no tenemos un power o si el power en menor o igual a 0
-    if(!this.name() || !this.power() || this.power() <= 0) {
-      return;
-    }
-
-    //si si tiene las otras cosas entonces crea un character nuevo
-    const newCharacter:Characters ={
-      id: this.characters().length + 1,
-      name:this.name(),
-      power: this.power()
-
-    };
-    //insertarlo en la lista de personajes,
-
-    this.characters.update((list)=>[...list, newCharacter])
-    this.resetFields()
-    console.log("nombre" + this.name, this.power);
-    //no sirve para cambiar el valor de la signal
-    //this.characters().push(newCharacter);
-
-
-  } */
-  //Para volver los inputs en cero
-  resetFields(){
-    this.name.set('');
-    this.power.set(0);
-  }
 }
