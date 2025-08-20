@@ -3,6 +3,10 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
+    "baseUrl": ".", // tomamos el route como base
+    "paths": {
+      "@environments/*": ["src/environments/*"]
+    },//path relativos son simplemente un alias
     "outDir": "./dist/out-tsc",
     "strict": true,
     "noImplicitOverride": true,
