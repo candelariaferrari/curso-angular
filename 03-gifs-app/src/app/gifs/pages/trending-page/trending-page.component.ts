@@ -28,7 +28,5 @@ export default class TrendingPageComponent {
   //injectamos el servicio
   gifService = inject(GifService);
 
-  //podemos crearnos una property
-  gifs
  }
 

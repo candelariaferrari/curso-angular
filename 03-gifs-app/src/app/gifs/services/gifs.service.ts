@@ -16,6 +16,8 @@ export class GifService {
   constructor() {
     //creamos una instancia del gifs service
     this.loadTrendingGifs();
+    console.log( 'servicio creado');
+
   }
 
   //peticion
