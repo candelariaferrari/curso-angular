@@ -1,7 +1,8 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { GifListComponent } from "../../components/gif-list/gif-list.component";
+import { GifService } from '../../services/gifs.service';
 
-const imageUrls: string[] = [ //esto deberia ser un servicio
+/* const imageUrls: string[] = [ //esto deberia ser un servicio
   "https://flowbite.s3.amazonaws.com/docs/gallery/square/image.jpg",
   "https://flowbite.s3.amazonaws.com/docs/gallery/square/image-1.jpg",
   "https://flowbite.s3.amazonaws.com/docs/gallery/square/image-2.jpg",
@@ -14,7 +15,7 @@ const imageUrls: string[] = [ //esto deberia ser un servicio
   "https://flowbite.s3.amazonaws.com/docs/gallery/square/image-9.jpg",
   "https://flowbite.s3.amazonaws.com/docs/gallery/square/image-10.jpg",
   "https://flowbite.s3.amazonaws.com/docs/gallery/square/image-11.jpg"
-];
+]; */
 
 
 @Component({
@@ -23,6 +24,11 @@ const imageUrls: string[] = [ //esto deberia ser un servicio
   templateUrl: './trending-page.component.html',
 })
 export default class TrendingPageComponent {
-  gifs= signal(imageUrls);
+
+  //injectamos el servicio
+  gifService = inject(GifService);
+
+  //podemos crearnos una property
+  gifs
  }
 

@@ -1,28 +1,44 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { environment } from '@environments/environment';
 import type { GiphyResponse } from '../interfaces/giphy.interface';
+import { Gif } from '../interfaces/gif.interface';
+import { GifMapper } from '../mapper/gif.mapper';
 
 @Injectable({ providedIn: 'root' })
 export class GifService {
   private http = inject(HttpClient);
 
-  constructor(){
+  trendingGifs = signal<Gif[]>([]);
+  trendingGifsLoading = signal(true);
+
+
+  constructor() {
     //creamos una instancia del gifs service
-    this.loadTrendingGifs;
+    this.loadTrendingGifs();
   }
 
   //peticion
   loadTrendingGifs() {
     //peticion GET al endpoint
     //el giphyresponse lo tomamos de las interfaces
-    this.http.get<GiphyResponse>(`${environment.ghipyUrl}/gifs/trending`),{ //lo sacamos de postman lo que esta fuera de {}
-      params:{
-        api_key: environment.ghipyApiKey, //lo ponemos con el _ porque asi lo muestra en postman
-        limit: 20,
-      }
+    this.http
+      .get<GiphyResponse>(`${environment.ghipyUrl}/gifs/trending`, { //lo sacamos de postman lo que esta fuera de {}
+        params: {
+          api_key: environment.ghipyApiKey, //lo ponemos con el _ porque asi lo muestra en postman
+          limit: 20,
+        },//la peticion no se va a disparar hasta que no se subcribe
+      })
+      .subscribe((resp) => {
 
-    }
+        const gifs = GifMapper.mapGiphyItemsToGifArray(resp.data);
+        console.log({ gifs }); // si el dia de mañana en la web de giphy cambia algo solo tenemos que ir al mapper
+        this.trendingGifs.set(gifs);
+        this.trendingGifsLoading.set(false);
+        /*
+        this.trendingGifsLoading.set(false);
+        console.log({ gifs }); */
+      });
   }
 
 }
