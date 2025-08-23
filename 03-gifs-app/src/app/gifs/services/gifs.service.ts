@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { computed, inject, Injectable, signal } from '@angular/core';
+import { computed, effect, inject, Injectable, signal } from '@angular/core';
 import { environment } from '@environments/environment';
 import type { GiphyResponse } from '../interfaces/giphy.interface';
 import { Gif } from '../interfaces/gif.interface';
@@ -11,6 +11,19 @@ import { map, Observable, tap } from 'rxjs';
 //funcion propia, tipado para un objento donde sus llaves son dinamicas
 //Record<string, Gif[]>
 
+const GIF_KEY= 'gifs';
+
+//creamos una funcion
+const laodFromLocalStorage = () => {
+  //verificar si tenemos gif
+  const gifsFromLocalStorage = localStorage.getItem(GIF_KEY) ?? '{}'; //grabamos un objeto Record<string, gifs[]>
+  //PARSEARLO = construirlo de nuevo
+  const gifs = JSON.parse(gifsFromLocalStorage);
+  console.log(gifs);
+
+  return gifs
+
+}
 
 
 
@@ -22,7 +35,7 @@ export class GifService {
   trendingGifsLoading = signal(true);
 
   //objeto, que va a ser una señal porque se va a cambiar
-  searchHistory = signal<Record<string, Gif[]>>({})
+  searchHistory = signal<Record<string, Gif[]>>(laodFromLocalStorage())
 
   //señales computadas
   searchHistoryKeys = computed(() => Object.keys(this.searchHistory()))
@@ -32,6 +45,12 @@ export class GifService {
     console.log('servicio creado');
 
   }
+  //efecto que se va a disparar cada vez que el searchHistory cambie
+  saveGifsToLocalStorage = effect(()=> {
+    const historyString = JSON.stringify(this.searchHistory());
+    localStorage.setItem(GIF_KEY, historyString);
+  })
+
 
   //peticion
   loadTrendingGifs() {
@@ -83,7 +102,7 @@ export class GifService {
       );
   }
   // Historial
-  getHistoryGifs( query: string): Gif[]{
+  getHistoryGifs(query: string): Gif[] {
     return this.searchHistory()[query] ?? [];
     // searchHistory() es una señal
     // aputantamos a un objeto [query]
