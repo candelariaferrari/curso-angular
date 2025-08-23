@@ -1,10 +1,18 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable, signal } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
 import { environment } from '@environments/environment';
 import type { GiphyResponse } from '../interfaces/giphy.interface';
 import { Gif } from '../interfaces/gif.interface';
 import { GifMapper } from '../mapper/gif.mapper';
-import { map, tap } from 'rxjs';
+import { map, Observable, tap } from 'rxjs';
+
+
+//almacenar cache
+//funcion propia, tipado para un objento donde sus llaves son dinamicas
+//Record<string, Gif[]>
+
+
+
 
 @Injectable({ providedIn: 'root' })
 export class GifService {
@@ -13,7 +21,11 @@ export class GifService {
   trendingGifs = signal<Gif[]>([]);
   trendingGifsLoading = signal(true);
 
+  //objeto, que va a ser una señal porque se va a cambiar
+  searchHistory = signal<Record<string, Gif[]>>({})
 
+  //señales computadas
+  searchHistoryKeys = computed(() => Object.keys(this.searchHistory()))
   constructor() {
     //creamos una instancia del gifs service
     this.loadTrendingGifs();
@@ -45,7 +57,7 @@ export class GifService {
   }
 
 
-  searchGifs(query: string) {//es un servicio que lo que regresa es un observable
+  searchGifs(query: string): Observable<Gif[]> {//es un servicio que lo que regresa es un observable
     return this.http
       .get<GiphyResponse>(`${environment.ghipyUrl}/gifs/search`, { //lo sacamos de postman lo que esta fuera de {}
         params: {
@@ -59,7 +71,23 @@ export class GifService {
         //map, permite poder barrer cada uno de los elementos de mi respuesta y regresar una transformacion
         map(({ data }) => data),
         map((items) => GifMapper.mapGiphyItemsToGifArray(items)), //aca nos devuelve el arreglo solamente con la info que le pedimos
-        );
 
+        //historial
+        tap((items) => {
+          this.searchHistory.update((history) => ({
+            ...history,
+            //propiedad computada
+            [query.toLocaleLowerCase()]: items,
+          })); //update actualiza el valor de la señal
+        })
+      );
   }
+  // Historial
+  getHistoryGifs( query: string): Gif[]{
+    return this.searchHistory()[query] ?? [];
+    // searchHistory() es una señal
+    // aputantamos a un objeto [query]
+    // y si no tenemos ningun valor regramos un array vacio
+  }
+
 }

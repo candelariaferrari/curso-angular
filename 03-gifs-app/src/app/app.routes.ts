@@ -19,6 +19,10 @@ export const routes: Routes = [
         path:'search',
         loadComponent: () => import('./gifs/pages/search-page/search-page.component')
       },
+      {
+        path:'history/:query', //argumentos dinamicos, ese "query" es el nombre de la llave , lo que aparece en consola,
+        loadComponent: () => import('./gifs/pages/gif-history/gif-history.component')
+      },
       { //aca a cualquier ruta que vaya me lleva al trending
         path:'**',
         redirectTo: 'trending'
