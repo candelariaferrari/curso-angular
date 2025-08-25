@@ -1,0 +1,127 @@
+//GIFS - SERVICES
+
+/* clave para usar en localStorage */
+const GIF_KEY = 'gifs';
+
+/**
+ * Carga los gifs guardados en localStorage.
+ * @returns Un objeto con el historial de gifs (Record<string, Gif[]>).
+ * 
+ */
+const loadFromLocalStorage = () => { //función para cargar los gifs desde localStorage
+  const gifsFromLocalStorage = localStorage.getItem(GIF_KEY) ?? '{}';
+  return JSON.parse(gifsFromLocalStorage);
+}
+
+@Injectable({ providedIn: 'root' })
+export class GifService {
+  private http = inject(HttpClient);
+
+  /** Señal que almacena los gifs de trending */
+  trendingGifs = signal<Gif[]>([]);
+
+  /** Estado de carga de trending gifs */
+  trendingGifsLoading = signal(false);
+
+  /** Número de página actual para la paginación */
+  private trendingPage = signal(0);
+
+  /**
+   * Señal computada que agrupa los gifs en subarreglos de 3 elementos.
+   * Ejemplo: [[gif, gif, gif], [gif, gif, gif], ...]
+   */
+  trendingGifGroup = computed<Gif[][]>(() => {
+    const groups: Gif[][] = [];
+    for (let i = 0; i < this.trendingGifs().length; i += 3) {
+      groups.push(this.trendingGifs().slice(i, i + 3));
+    }
+    return groups;
+  });
+
+  /** Historial de búsquedas (clave = query, valor = array de gifs) */
+  searchHistory = signal<Record<string, Gif[]>>(loadFromLocalStorage());
+
+  /** Señal computada con las keys del historial */
+  searchHistoryKeys = computed(() => Object.keys(this.searchHistory()));
+
+  constructor() {
+    this.loadTrendingGifs();
+    console.log('GifService creado');
+  }
+
+  /**
+   * Efecto que guarda automáticamente el historial en localStorage
+   * cada vez que la señal `searchHistory` cambie.
+   */
+  saveGifsToLocalStorage = effect(() => {
+    const historyString = JSON.stringify(this.searchHistory());
+    localStorage.setItem(GIF_KEY, historyString);
+  });
+
+  /**
+   * Carga gifs trending desde la API de Giphy con paginación.
+   * Actualiza las señales: `trendingGifs`, `trendingPage` y `trendingGifsLoading`.
+   */
+  loadTrendingGifs() {
+    if (this.trendingGifsLoading()) return;
+    this.trendingGifsLoading.set(true);
+
+    this.http
+      .get<GiphyResponse>(`${environment.ghipyUrl}/gifs/trending`, {
+        params: {
+          api_key: environment.ghipyApiKey,
+          limit: 20,
+          offset: this.trendingPage() * 20,
+        },
+      })
+      .subscribe((resp) => {
+        const gifs = GifMapper.mapGiphyItemsToGifArray(resp.data);
+
+        this.trendingGifs.update(currentGifs => [
+          ...currentGifs,
+          ...gifs,
+        ]);
+
+        this.trendingPage.update((page) => page + 1);
+        this.trendingGifsLoading.set(false);
+      });
+  }
+
+  /**
+   * Realiza una búsqueda de gifs en la API de Giphy.
+   * Guarda los resultados en el historial.
+   *
+   * @param query - Texto de búsqueda
+   * @returns Observable con los resultados de tipo Gif[]
+   */
+  searchGifs(query: string): Observable<Gif[]> {
+    return this.http
+      .get<GiphyResponse>(`${environment.ghipyUrl}/gifs/search`, {
+        params: {
+          api_key: environment.ghipyApiKey,
+          limit: 20,
+          q: query,
+        },
+      })
+      .pipe(
+        map(({ data }) => data),
+        map((items) => GifMapper.mapGiphyItemsToGifArray(items)),
+        tap((items) => {
+          this.searchHistory.update((history) => ({
+            ...history,
+            [query.toLocaleLowerCase()]: items,
+          }));
+        })
+      );
+  }
+
+  /**
+   * Obtiene gifs desde el historial por query.
+   *
+   * @param query - Texto de búsqueda (clave del historial)
+   * @returns Arreglo de gifs o [] si no existe en el historial
+   */
+  getHistoryGifs(query: string): Gif[] {
+    return this.searchHistory()[query] ?? [];
+  }
+}
