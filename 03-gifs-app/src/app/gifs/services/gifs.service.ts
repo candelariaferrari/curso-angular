@@ -11,7 +11,7 @@ import { map, Observable, tap } from 'rxjs';
 //funcion propia, tipado para un objento donde sus llaves son dinamicas
 //Record<string, Gif[]>
 
-const GIF_KEY= 'gifs';
+const GIF_KEY = 'gifs';
 
 //creamos una funcion
 const laodFromLocalStorage = () => {
@@ -31,8 +31,23 @@ const laodFromLocalStorage = () => {
 export class GifService {
   private http = inject(HttpClient);
 
-  trendingGifs = signal<Gif[]>([]);
-  trendingGifsLoading = signal(true);
+  trendingGifs = signal<Gif[]>([]); //[gif, gif, gif, gif ] asi vienen aca
+  trendingGifsLoading = signal(false);
+  private trendingPage = signal(0); // para hacer la paginacion
+
+  //tenemos que hacer que venga [[gif, gif, gif],[gif, gif, gif],[gif, gif, gif]]
+  //va  a ser una señal computada
+  trendingGifGroup = computed<Gif[][]>(() => {
+    //hacemos los arreglos de 3 elementos
+    const groups = [];
+
+    for (let i = 0; i < this.trendingGifs().length; i += 3) {
+      groups.push(this.trendingGifs().slice(i, i + 3)); //la idea es que corte de 3 en 3
+    }
+    console.log(groups);
+
+    return groups;
+  })
 
   //objeto, que va a ser una señal porque se va a cambiar
   searchHistory = signal<Record<string, Gif[]>>(laodFromLocalStorage())
@@ -46,7 +61,7 @@ export class GifService {
 
   }
   //efecto que se va a disparar cada vez que el searchHistory cambie
-  saveGifsToLocalStorage = effect(()=> {
+  saveGifsToLocalStorage = effect(() => {
     const historyString = JSON.stringify(this.searchHistory());
     localStorage.setItem(GIF_KEY, historyString);
   })
@@ -54,6 +69,9 @@ export class GifService {
 
   //peticion
   loadTrendingGifs() {
+    //PAGINACION
+    if (this.trendingGifsLoading()) return;
+    this.trendingGifsLoading.set(true);
     //peticion GET al endpoint
     //el giphyresponse lo tomamos de las interfaces
     this.http
@@ -61,13 +79,18 @@ export class GifService {
         params: {
           api_key: environment.ghipyApiKey, //lo ponemos con el _ porque asi lo muestra en postman
           limit: 20,
+          offset: this.trendingPage() * 20 //es quiere decir el numero de pagina que este * 20 gif
         },//la peticion no se va a disparar hasta que no se subcribe
       })
       .subscribe((resp) => {
 
         const gifs = GifMapper.mapGiphyItemsToGifArray(resp.data);
         console.log({ gifs }); // si el dia de mañana en la web de giphy cambia algo solo tenemos que ir al mapper
-        this.trendingGifs.set(gifs);
+        this.trendingGifs.update(currentGifs => [
+          ...currentGifs,
+          ...gifs
+        ]);
+        this.trendingPage.update((page)=> page + 1); //para que me cargue gif distintos y actualice la pag
         this.trendingGifsLoading.set(false);
         /*
         this.trendingGifsLoading.set(false);
