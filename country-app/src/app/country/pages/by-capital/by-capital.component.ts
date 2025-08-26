@@ -16,7 +16,7 @@ export class ByCapitalComponent {
   countryService = inject(CountryService); //servicio
 
   isLoading = signal(false);
-  isError = signal<string|null>(null);
+  isError = signal<string | null>(null);
   countries = signal<Country[]>([])
 
   onSearch(query: string) { // el query de buscqueda
@@ -26,15 +26,28 @@ export class ByCapitalComponent {
     this.isError.set(null);
 
     //console.log(query);
-    this.countryService.searchByCapital(query) //disparar la peticion
-      .subscribe( countries => {
-
+  /*   this.countryService.searchByCapital(query) //disparar la peticion
+      .subscribe(countries => {
         this.isLoading.set(false)
         this.countries.set(countries)
-     /*    const c = CountryMapper.mapRestCountryArrayToCountryArray(countries)
-        console.log(c); */
+        /*    const c = CountryMapper.mapRestCountryArrayToCountryArray(countries)
+      }) */
+        this.countryService.searchByCapital(query) //disparar la peticion
+        .subscribe({
+          next: ( countries ) => {
 
-      })
+              this.isLoading.set(false)
+              this.countries.set(countries)
+          },
+          error: (err)=>  {
+            console.log(err);
+
+            this.isLoading.set(false)
+            this.countries.set([])
+            this.isError.set(err)
+          },
+        })
+
   }
 
 
