@@ -6,10 +6,10 @@ import { CountryService } from '../../services/country.service';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { of } from 'rxjs';
 
-function validateQueryParam(queryParam: string): Region {
+function validateQueryParam(queryParam: string): Region { //esto recibimos por el url
   queryParam = queryParam.toLowerCase();
 
-  const validRegions: Record<string, Region> = {
+  const validRegions: Record<string, Region> = { //validamos que sea alguna de estas regiones que son las validas
     africa: 'Africa',
     americas: 'Americas',
     asia: 'Asia',
@@ -18,7 +18,7 @@ function validateQueryParam(queryParam: string): Region {
     antarctic: 'Antarctic',
   };
 
-  return validRegions[queryParam] ?? 'Americas';
+  return validRegions[queryParam] ?? 'Americas'; //regresa americas por defecto
 }
 
 @Component({
