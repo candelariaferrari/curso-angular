@@ -7,6 +7,7 @@ import { Country } from '../../interfaces/country.interfaces';
 import { firstValueFrom, of } from 'rxjs';
 
 import { rxResource } from '@angular/core/rxjs-interop';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-by-capital',
@@ -14,63 +15,75 @@ import { rxResource } from '@angular/core/rxjs-interop';
   templateUrl: './by-capital.component.html',
 
 })
-// OPCION 1
-// export class ByCapitalComponent {
-//   countryService = inject(CountryService); //servicio
-
-//   isLoading = signal(false);
-//   isError = signal<string | null>(null);
-//   countries = signal<Country[]>([])
-
-//   onSearch(query: string) { // el query de buscqueda
-//     if (this.isLoading()) return; // si esta en true que no haga nada
-
-//     this.isLoading.set(true)
-//     this.isError.set(null);
-
-//     //console.log(query);
-//   /*   this.countryService.searchByCapital(query) //disparar la peticion
-//       .subscribe(countries => {
-//         this.isLoading.set(false)
-//         this.countries.set(countries)
-//         /*    const c = CountryMapper.mapRestCountryArrayToCountryArray(countries)
-//       }) */
-//         this.countryService.searchByCapital(query) //disparar la peticion
-//         .subscribe({
-//           next: ( countries ) => {
-
-//               this.isLoading.set(false)
-//               this.countries.set(countries)
-//           },
-//           error: (err)=>  {
-//             console.log(err);
-
-//             this.isLoading.set(false)
-//             this.countries.set([])
-//             this.isError.set(err)
-//           },
-//         })
-
-//   }
-
-
-// }
 
 // OPCION 2 ESTA EN PRUEBA TODAVIA
 export class ByCapitalComponent {
   CountryService = inject(CountryService);
-  query = signal('');
+  activatedRoute = inject(ActivatedRoute);
+  queryParams = this.activatedRoute.snapshot.queryParamMap.get('query')?? '';
+  query = signal(this.queryParams);
+
+
   //opcion con rxResource
   countryResource = rxResource({
     request: () => ({
       query: this.query()
     }),
     loader: ({ request }) => {
+      console.log({query: request.query});
+
       if (!request.query) return of([]); //un observable que va a regresar un array vacio
       return this.CountryService.searchByCapital(request.query)
 
     }
   })
+
+}
+
+
+/***
+ *  OPCION 1
+export class ByCapitalComponent {
+  countryService = inject(CountryService); //servicio
+
+  isLoading = signal(false);
+  isError = signal<string | null>(null);
+  countries = signal<Country[]>([])
+
+  onSearch(query: string) { // el query de buscqueda
+    if (this.isLoading()) return; // si esta en true que no haga nada
+
+    this.isLoading.set(true)
+    this.isError.set(null);
+
+    //console.log(query);
+  //  this.countryService.searchByCapital(query) //disparar la peticion
+  //     .subscribe(countries => {
+  //       this.isLoading.set(false)
+  //       this.countries.set(countries)
+  //       /*    const c = CountryMapper.mapRestCountryArrayToCountryArray(countries)
+  //     })
+        this.countryService.searchByCapital(query) //disparar la peticion
+        .subscribe({
+          next: ( countries ) => {
+
+              this.isLoading.set(false)
+              this.countries.set(countries)
+          },
+          error: (err)=>  {
+            console.log(err);
+
+            this.isLoading.set(false)
+            this.countries.set([])
+            this.isError.set(err)
+          },
+        })
+
+  }
+
+
+}
+ */
 
 
   /*   opcion con resource
@@ -86,4 +99,3 @@ export class ByCapitalComponent {
        )
       }
     }) */
-}
