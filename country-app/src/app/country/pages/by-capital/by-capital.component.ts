@@ -4,8 +4,9 @@ import { CountryListComponent } from "../../components/country-list/country-list
 import { CountryService } from '../../services/country.service';
 
 import { Country } from '../../interfaces/country.interfaces';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, of } from 'rxjs';
 
+import { rxResource } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-by-capital',
@@ -59,17 +60,30 @@ import { firstValueFrom } from 'rxjs';
 export class ByCapitalComponent {
   CountryService = inject(CountryService);
   query = signal('');
-
-  countryResource = resource({
+  //opcion con rxResource
+  countryResource = rxResource({
     request: () => ({
       query: this.query()
     }),
-    loader: async ({ request }) => {
-      if (!request.query) return [];
-     // return this.CountryService.searchByCapital(request.query)
-     return await firstValueFrom(//nos permite transformar cualquier observable en una promesa
-      this.CountryService.searchByCapital(request.query)
-     )
+    loader: ({ request }) => {
+      if (!request.query) return of([]); //un observable que va a regresar un array vacio
+      return this.CountryService.searchByCapital(request.query)
+
     }
   })
+
+
+  /*   opcion con resource
+  countryResource = resource({
+      request: () => ({
+        query: this.query()
+      }),
+      loader: async ({ request }) => {
+        if (!request.query) return [];
+       // return this.CountryService.searchByCapital(request.query)
+       return await firstValueFrom(//nos permite transformar cualquier observable en una promesa
+        this.CountryService.searchByCapital(request.query)
+       )
+      }
+    }) */
 }
