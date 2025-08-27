@@ -1,9 +1,10 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, resource, signal } from '@angular/core';
 import { SearchInputComponent } from "../../components/search-input/search-input.component";
 import { CountryListComponent } from "../../components/country-list/country-list.component";
 import { CountryService } from '../../services/country.service';
 
 import { Country } from '../../interfaces/country.interfaces';
+import { firstValueFrom } from 'rxjs';
 
 
 @Component({
@@ -12,43 +13,63 @@ import { Country } from '../../interfaces/country.interfaces';
   templateUrl: './by-capital.component.html',
 
 })
+// OPCION 1
+// export class ByCapitalComponent {
+//   countryService = inject(CountryService); //servicio
+
+//   isLoading = signal(false);
+//   isError = signal<string | null>(null);
+//   countries = signal<Country[]>([])
+
+//   onSearch(query: string) { // el query de buscqueda
+//     if (this.isLoading()) return; // si esta en true que no haga nada
+
+//     this.isLoading.set(true)
+//     this.isError.set(null);
+
+//     //console.log(query);
+//   /*   this.countryService.searchByCapital(query) //disparar la peticion
+//       .subscribe(countries => {
+//         this.isLoading.set(false)
+//         this.countries.set(countries)
+//         /*    const c = CountryMapper.mapRestCountryArrayToCountryArray(countries)
+//       }) */
+//         this.countryService.searchByCapital(query) //disparar la peticion
+//         .subscribe({
+//           next: ( countries ) => {
+
+//               this.isLoading.set(false)
+//               this.countries.set(countries)
+//           },
+//           error: (err)=>  {
+//             console.log(err);
+
+//             this.isLoading.set(false)
+//             this.countries.set([])
+//             this.isError.set(err)
+//           },
+//         })
+
+//   }
+
+
+// }
+
+// OPCION 2 ESTA EN PRUEBA TODAVIA
 export class ByCapitalComponent {
-  countryService = inject(CountryService); //servicio
+  CountryService = inject(CountryService);
+  query = signal('');
 
-  isLoading = signal(false);
-  isError = signal<string | null>(null);
-  countries = signal<Country[]>([])
-
-  onSearch(query: string) { // el query de buscqueda
-    if (this.isLoading()) return; // si esta en true que no haga nada
-
-    this.isLoading.set(true)
-    this.isError.set(null);
-
-    //console.log(query);
-  /*   this.countryService.searchByCapital(query) //disparar la peticion
-      .subscribe(countries => {
-        this.isLoading.set(false)
-        this.countries.set(countries)
-        /*    const c = CountryMapper.mapRestCountryArrayToCountryArray(countries)
-      }) */
-        this.countryService.searchByCapital(query) //disparar la peticion
-        .subscribe({
-          next: ( countries ) => {
-
-              this.isLoading.set(false)
-              this.countries.set(countries)
-          },
-          error: (err)=>  {
-            console.log(err);
-
-            this.isLoading.set(false)
-            this.countries.set([])
-            this.isError.set(err)
-          },
-        })
-
-  }
-
-
+  countryResource = resource({
+    request: () => ({
+      query: this.query()
+    }),
+    loader: async ({ request }) => {
+      if (!request.query) return [];
+     // return this.CountryService.searchByCapital(request.query)
+     return await firstValueFrom(//nos permite transformar cualquier observable en una promesa
+      this.CountryService.searchByCapital(request.query)
+     )
+    }
+  })
 }
