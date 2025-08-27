@@ -45,7 +45,7 @@ export class ByRegionComponent {
   queryParam = this.activatedRoute.snapshot.queryParamMap.get('region') ?? '';
 
   selectedRegion = linkedSignal<Region>(() =>
-    validateQueryParam(this.queryParam)
+    validateQueryParam(this.queryParam) //validamos
   );
 
   countryResource = rxResource({
