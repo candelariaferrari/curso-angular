@@ -7,7 +7,7 @@ import { Country } from '../../interfaces/country.interfaces';
 import { firstValueFrom, of } from 'rxjs';
 
 import { rxResource } from '@angular/core/rxjs-interop';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-by-capital',
@@ -20,23 +20,27 @@ import { ActivatedRoute } from '@angular/router';
 export class ByCapitalComponent {
   CountryService = inject(CountryService);
   activatedRoute = inject(ActivatedRoute);
+  router = inject(Router)
   queryParams = this.activatedRoute.snapshot.queryParamMap.get('query')?? '';
   query = signal(this.queryParams);
 
 
   //opcion con rxResource
   countryResource = rxResource({
-    request: () => ({
-      query: this.query()
-    }),
+    request: () => ({ query: this.query() }),
     loader: ({ request }) => {
-      console.log({query: request.query});
+      if (!request.query) return of([]);
 
-      if (!request.query) return of([]); //un observable que va a regresar un array vacio
-      return this.CountryService.searchByCapital(request.query)
+      this.router.navigate(['/country/by-capital'], {
+        queryParams: {
+          query: request.query,
+          hola:'mundo'
+        },
+      });
 
-    }
-  })
+      return this.CountryService.searchByCapital(request.query);
+    },
+  });
 
 }
 
