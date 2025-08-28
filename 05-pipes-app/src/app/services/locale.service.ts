@@ -19,6 +19,6 @@ export class LocaleService {
   changeLocale(locale: AvailableLocale) {
     localStorage.setItem('locale', locale);
     this.currentLocale.set(locale);
-    window.location.reload();
+    window.location.reload(); //cambiamos de manera dinamica
   }
 }

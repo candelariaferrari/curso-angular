@@ -28,8 +28,8 @@ export default class BasicPagesComponent {
     });
   });
 
-/*   changeLocale(locale: AvailableLocale) {
+  changeLocale(locale: AvailableLocale) {
     console.log({ locale });
-    this.localService.changeLocale(locale);
-  } */
- }
+    this.localeService.changeLocale(locale);
+  }
+}
