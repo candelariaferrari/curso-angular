@@ -28,12 +28,12 @@
 <div class="stats stats-vertical lg:stats-horizontal shadow w-full">
   <div class="stat">
     <div class="stat-title">Date Pipe</div>
-    <div class="stat-value">{{ customDate() | date }}</div>
+    <div class="stat-value">{{ customDate() | date }}</div> <!-- pipe date -->
     <div class="stat-desc">{{ customDate() }}</div>
   </div>
 
   <div class="stat">
-    <div class="stat-title">Date|long|GMT-6</div>
+    <div class="stat-title">Date|long|GMT-6</div> <!-- long para toda la fecha,  gmt -6 zona horaria de un futuro -->
     <div class="stat-value">{{ customDate() | date : "long" : "GMT-6" }}</div>
     <div class="stat-desc">{{ customDate() }}</div>
   </div>

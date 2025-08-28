@@ -15,15 +15,15 @@ export default class BasicPagesComponent {
   nameUpper = signal('CANDELARIA');
   fullName = signal('cANDELARIA Ferrari');
 
-  customDate = signal(new Date());
+  customDate = signal(new Date()); //fecha actual, que cada vez que recargue se va a actualizar
 
-  tickingDateEffect = effect((onCleanup) => {
+  tickingDateEffect = effect((onCleanup) => { /* actualizando la fecha cada 10 seg */
     const interval = setInterval(() => {
       this.customDate.set(new Date());
       console.log('tick');
     }, 1000);
 
-    onCleanup(() => {
+    onCleanup(() => { /* limpieza del intervalo para que no siga funcionando cuando el componente es destruido */
       clearInterval(interval);
     });
   });
