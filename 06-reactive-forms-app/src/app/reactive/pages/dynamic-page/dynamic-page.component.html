@@ -23,7 +23,7 @@
       placeholder="Agregar favorito"
       [formControl]="newFavorite"
       (keydown.enter)="onAddToFavorites()"
-      (keydown.enter)="$event.preventDefault()">
+      (keydown.enter)="$event.preventDefault()">  <!-- "$event.preventDefault()" evita que se guarde el form con el enter en el input -->
       <button class="btn btn-outline-primary" type="button" (click)="onAddToFavorites()">
         Agregar favorito
       </button>
