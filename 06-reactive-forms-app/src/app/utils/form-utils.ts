@@ -9,10 +9,16 @@ export class FormUtils {
 
 
   //expreciones regulares
+  static namePattern = '([a-zA-Z]+) ([a-zA-Z]+)';
+  static emailPattern = '^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$';
+  static notOnlySpacesPattern = '^[a-zA-Z0-9]+$';
+
   //metodo para manejar los errores, ya que se repiten en los otros metedos
   //Método para transformar errores en mensajes legibles
   // Recibe los errores de un FormControl y devuelve un string
   static getTextError(errors: ValidationErrors) {
+    console.log(errors);
+
     for (const key of Object.keys(errors)) { // Recorremos los tipos de error
       switch (key) {
         case 'required':
@@ -23,6 +29,15 @@ export class FormUtils {
 
         case 'min':
           return `Valor mínimo de ${errors['min'].min}`;
+
+        case 'pattern':
+        if (errors['pattern'].requiredPattern === FormUtils.emailPattern){
+          return 'El correo electronico no es correcto'
+        }
+        return 'error de patron contra expresion regular'
+
+        default:
+          return `Error de validacion no controlado ${{key}}`;
       }
     }
     return null // Si no hay errores conocidos, devuelve null
