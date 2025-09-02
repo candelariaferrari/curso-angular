@@ -2,15 +2,16 @@
 <hr>
 
 <form autocomplete="off" [formGroup]="myForm">
-
   <!-- Nombre -->
   <div class="mb-3 row">
     <label class="col-sm-3 col-form-label">Nombre</label>
     <div class="col-sm-9">
-      <input class="form-control" placeholder="Nombre de la persona" formGroupName="name">
+      <input class="form-control" placeholder="Nombre de la persona" formControlName="name">
+      @if (formUtils.isValidField(myForm, 'name')) {
       <span class="form-text text-danger">
-        error message
+        {{ formUtils.getFieldError(myForm, "name") }}
       </span>
+      }
     </div>
   </div>
 
@@ -40,15 +41,20 @@
       $index) {
       <div class="mb-1">
         <div class="input-group">
-          <input class="form-control"
-          [formControlName]="i">
+          <input class="form-control" [formControlName]="i">
           <button class="btn btn-outline-danger" type="button">
             Eliminar
           </button>
         </div>
+        @if (formUtils.isValidFieldInArray(favoriteGames,i)){
         <span class="form-text text-danger">
-          Este campo es requerido
+          {{ formUtils.getFieldErrorInArray(favoriteGames, i)}}
         </span>
+        <!--  <span class="form-text text-danger">
+
+          </span> -->
+        }
+
 
       </div>
       }

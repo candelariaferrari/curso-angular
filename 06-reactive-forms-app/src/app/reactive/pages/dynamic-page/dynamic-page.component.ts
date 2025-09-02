@@ -26,4 +26,6 @@ export class DynamicPageComponent {
   get favoriteGames(){
     return this.myForm.get('favoriteGames') as FormArray;
   }
+
+ 
 }
