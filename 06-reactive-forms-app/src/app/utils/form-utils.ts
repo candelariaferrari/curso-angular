@@ -1,7 +1,7 @@
 
 //CENTRALIZAMOS LA VALIDACION DEL FORM
 
-import { FormArray, FormGroup, ValidationErrors } from "@angular/forms";
+import { AbstractControl, FormArray, FormGroup, ValidationErrors } from "@angular/forms";
 
 export class FormUtils {
   // Clase de utilidades para manejar validaciones de formularios
@@ -87,5 +87,26 @@ export class FormUtils {
 
   }
 
+
+
+
+    // Validador personalizado para comprobar si dos campos son iguales
+    // Ejemplo típico: password === confirmPassword
+  static isFieldOneEqualFieldTwo(field1: string, field2: string) {
+
+    return (formGroup: AbstractControl) => {
+      // AbstractControl nos permite acceder al formulario completo o a un grupo de controles
+
+      const field1Value = formGroup.get(field1)?.value;
+      // Obtenemos el valor del primer campo (ej: 'password')
+
+      const field2Value = formGroup.get(field2)?.value;
+      // Obtenemos el valor del segundo campo (ej: 'confirmPassword')
+
+      // Si son iguales → no hay error (null)
+      // Si son distintos → devolvemos un error con la key "passwordsNotEqual"
+      return field1Value === field2Value ? null : { passwordsNotEqual: true };
+    };
+  }
 
 }
