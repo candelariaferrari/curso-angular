@@ -3,6 +3,15 @@
 
 import { AbstractControl, FormArray, FormGroup, ValidationErrors } from "@angular/forms";
 
+// Función auxiliar que simula un delay de 2.5 segundos
+// Útil para probar validaciones asincrónicas (ej: contra un servidor real)
+async function sleep() {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(true);
+    }, 2500);
+  });
+}
 export class FormUtils {
   // Clase de utilidades para manejar validaciones de formularios
   // La idea es no repetir código en cada componente
@@ -19,7 +28,7 @@ export class FormUtils {
   static getTextError(errors: ValidationErrors) {
     console.log(errors);
 
-    for (const key of Object.keys(errors)) { // Recorremos los tipos de error
+    for (const key of Object.keys(errors)) {// Recorremos los tipos de error
       switch (key) {
         case 'required':
           return 'Este campo es requerido';
@@ -30,18 +39,33 @@ export class FormUtils {
         case 'min':
           return `Valor mínimo de ${errors['min'].min}`;
 
+        case 'email':
+          return `El valor ingresado no es un correo electrónico`;
+
+        case 'emailTaken':
+          return `El correo electrónico ya está siendo usado por otro usuario`;
+
+        case 'noStrider':
+          return `No se puede usar el username de strider en la app`;
+
         case 'pattern':
-        if (errors['pattern'].requiredPattern === FormUtils.emailPattern){
-          return 'El correo electronico no es correcto'
-        }
-        return 'error de patron contra expresion regular'
+          if (errors['pattern'].requiredPattern === FormUtils.emailPattern) {
+            return 'El valor ingresado no luce como un correo electrónico';
+          }
+
+          return 'Error de patrón contra expresión regular';
 
         default:
-          return `Error de validacion no controlado ${{key}}`;
+          return `Error de validación no controlado ${key}`;
       }
     }
-    return null // Si no hay errores conocidos, devuelve null
+
+    return null;
   }
+
+
+
+
   //metodos estaticos
   //Verifica si un campo de un FormGroup es inválido y fue tocado
   // Se usa en el template para mostrar/ocultar mensajes de error
@@ -90,8 +114,8 @@ export class FormUtils {
 
 
 
-    // Validador personalizado para comprobar si dos campos son iguales
-    // Ejemplo típico: password === confirmPassword
+  // Validador personalizado para comprobar si dos campos son iguales
+  // Ejemplo típico: password === confirmPassword
   static isFieldOneEqualFieldTwo(field1: string, field2: string) {
 
     return (formGroup: AbstractControl) => {
@@ -109,4 +133,30 @@ export class FormUtils {
     };
   }
 
+
+  //metodo asincrono
+  // Validación personalizada asincrónica (ejemplo: consulta a servidor para verificar emails ya registrados)
+  static async checkingServerResponse(control: AbstractControl): Promise<ValidationErrors | null> {
+    console.log('Validando contra servidor');
+
+    await sleep(); // 2 segundos y medio, simula un delay de 2.5 segundos, como si fuese un request HTTP
+
+    const formValue = control.value;
+    // Si el email ingresado es este, devolvemos un error de "emailTaken"
+    if (formValue === 'hola@mundo.com') {
+      return {
+        emailTaken: true,
+      };
+    }
+    // Si no hay problema → no devolvemos error
+    return null;
+  }
+
+  // Validación personalizada síncrona
+  // Bloquea el valor "strider" → si lo detecta, devuelve un error { noStrider: true }
+  static notStrider(control: AbstractControl): ValidationErrors | null {
+    const value = control.value;
+
+    return value === 'strider' ? { noStrider: true } : null;
+  }
 }
